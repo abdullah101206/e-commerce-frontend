@@ -39,3 +39,34 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Heavy Dependencies
+node_modules/
+
+# Next.js Build & Output
+.next/
+out/
+build/
+dist/
+
+# Environment Variables (Future safety ke liye)
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# Debug Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# AI / Custom Agent Rules (Optional)
+AGENTS.md
+CLAUDE.md
