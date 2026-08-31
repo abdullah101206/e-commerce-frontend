@@ -46,11 +46,6 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-neutral-900 flex flex-col md:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
           <p>© 2026 AURA Fashion Group. All rights reserved.</p>
-          <div className="flex space-x-6">
-            <span className="hover:text-neutral-400 cursor-pointer">Instagram</span>
-            <span className="hover:text-neutral-400 cursor-pointer">Pinterest</span>
-            <span className="hover:text-neutral-400 cursor-pointer">Facebook</span>
-          </div>
         </div>
       </div>
     </footer>

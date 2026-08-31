@@ -1,56 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-const INITIAL_CART = [
-  {
-    id: 1,
-    title: "Structured Tailored Blazer",
-    price: 280,
-    size: "M",
-    color: "Charcoal Black",
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=800",
-  },
-  {
-    id: 2,
-    title: "Minimalist Linen Overshirt",
-    price: 140,
-    size: "L",
-    color: "Oatmeal Beige",
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800",
-  },
-];
-
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(INITIAL_CART);
+  const [cartItems, setCartItems] = useState([]);
+
+  // Sync cart from LocalStorage on mount
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartItems(savedCart);
+  }, []);
+
+  const updateLocalStorage = (updatedCart) => {
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
 
   const updateQuantity = (id, delta) => {
-    setCartItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const newQty = item.quantity + delta;
-          return newQty > 0 ? { ...item, quantity: newQty } : item;
-        }
-        return item;
-      })
-    );
+    const updatedCart = cartItems.map((item) => {
+      if (item.id === id) {
+        const newQty = item.quantity + delta;
+        return newQty > 0 ? { ...item, quantity: newQty } : item;
+      }
+      return item;
+    });
+    updateLocalStorage(updatedCart);
   };
 
   const removeItem = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+    const updatedCart = cartItems.filter((item) => item.id !== id);
+    updateLocalStorage(updatedCart);
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
   const shipping = subtotal > 200 || subtotal === 0 ? 0 : 25;
   const grandTotal = subtotal + shipping;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="border-b border-neutral-200 pb-6 mb-10">
-        <span className="text-xs uppercase tracking-widest text-amber-800 font-semibold">Your Bag</span>
+        <span className="text-xs uppercase tracking-widest text-amber-800 font-semibold">
+          Your Bag
+        </span>
         <h1 className="font-serif text-3xl sm:text-4xl font-bold tracking-tight text-neutral-900 mt-1">
           Shopping Cart ({cartItems.length})
         </h1>
@@ -58,7 +53,6 @@ export default function CartPage() {
 
       {cartItems.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        
           <div className="lg:col-span-8 space-y-6">
             {cartItems.map((item) => (
               <div
@@ -67,15 +61,29 @@ export default function CartPage() {
               >
                 <div className="flex items-center space-x-4">
                   <div className="relative aspect-[3/4] w-20 bg-neutral-100 flex-shrink-0">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-neutral-900">{item.title}</h3>
+                    <h3 className="text-sm font-bold text-neutral-900">
+                      {item.title}
+                    </h3>
                     <p className="text-xs text-neutral-500">
-                      Size: <span className="font-medium text-neutral-800">{item.size}</span> | Color:{" "}
-                      <span className="font-medium text-neutral-800">{item.color}</span>
+                      Size:{" "}
+                      <span className="font-medium text-neutral-800">
+                        {item.size || "M"}
+                      </span>{" "}
+                      | Color:{" "}
+                      <span className="font-medium text-neutral-800">
+                        {item.color || "Standard"}
+                      </span>
                     </p>
-                    <p className="text-xs font-semibold text-neutral-900 sm:hidden">${item.price}</p>
+                    <p className="text-xs font-semibold text-neutral-900 sm:hidden">
+                      ${item.price}
+                    </p>
                   </div>
                 </div>
 
@@ -87,7 +95,9 @@ export default function CartPage() {
                     >
                       -
                     </button>
-                    <span className="w-8 text-center text-xs font-bold">{item.quantity}</span>
+                    <span className="w-8 text-center text-xs font-bold">
+                      {item.quantity}
+                    </span>
                     <button
                       onClick={() => updateQuantity(item.id, 1)}
                       className="w-8 h-8 flex items-center justify-center text-neutral-600 hover:bg-neutral-100 text-sm font-semibold"
@@ -129,7 +139,9 @@ export default function CartPage() {
               <div className="space-y-3 text-xs">
                 <div className="flex justify-between text-neutral-600">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-neutral-900">${subtotal}</span>
+                  <span className="font-semibold text-neutral-900">
+                    ${subtotal}
+                  </span>
                 </div>
                 <div className="flex justify-between text-neutral-600">
                   <span>Estimated Express Delivery</span>
@@ -159,8 +171,12 @@ export default function CartPage() {
         </div>
       ) : (
         <div className="text-center py-20 bg-white border border-neutral-200 space-y-4">
-          <h2 className="font-serif text-2xl font-bold text-neutral-900">Your Shopping Bag is Empty</h2>
-          <p className="text-xs text-neutral-500">Looks like you haven't added any luxury pieces yet.</p>
+          <h2 className="font-serif text-2xl font-bold text-neutral-900">
+            Your Shopping Bag is Empty
+          </h2>
+          <p className="text-xs text-neutral-500">
+            Looks like you haven't added any luxury pieces yet.
+          </p>
           <Link
             href="/shop"
             className="inline-block px-8 py-4 bg-neutral-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 transition-colors"

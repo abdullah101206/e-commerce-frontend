@@ -10,19 +10,41 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+  const [cartCount, setCartCount] = useState(0);
+
   const pathname = usePathname();
   const router = useRouter();
+
+  const updateCartCount = () => {
+    try {
+      const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      const totalItems = savedCart.reduce(
+        (acc, item) => acc + (item.quantity || 1),
+        0
+      );
+      setCartCount(totalItems);
+    } catch (e) {
+      setCartCount(0);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
-    
-    // Auth Check
+
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    updateCartCount();
+
+    window.addEventListener("storage", updateCartCount);
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", updateCartCount);
+      window.removeEventListener("cartUpdated", updateCartCount);
+    };
   }, [pathname]);
 
   const handleLogout = () => {
@@ -57,7 +79,6 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        
         <Link href="/" className="group flex items-center gap-2">
           <span className="font-serif text-2xl font-extrabold tracking-widest text-white transition-transform group-hover:scale-105">
             AURA<span className="text-amber-500">.</span>
@@ -180,9 +201,13 @@ export default function Navbar() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
-            <span className="absolute -top-1 -right-1.5 bg-amber-500 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-              2
-            </span>
+
+            {/* Dynamic Badge - Shows only when cartCount > 0 */}
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1.5 bg-amber-500 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
           </Link>
 
           <div className="hidden lg:flex items-center space-x-3 border-l border-neutral-800 pl-5">
