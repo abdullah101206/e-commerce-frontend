@@ -66,9 +66,10 @@ export default function ProductCard({ id, title, price, category, image }) {
           alt={title}
           className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-black/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300" />
 
-        <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 space-y-2">
+        {/* Mobile: Always visible | Desktop: Visible only on hover */}
+        <div className="absolute bottom-4 left-4 right-4 translate-y-0 opacity-150 sm:translate-y-4 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-300 space-y-2">
           <button
             onClick={handleAddToCart}
             className="w-full block text-center bg-neutral-900 text-white text-xs uppercase font-semibold tracking-wider py-3 shadow-md hover:bg-amber-800 transition-colors cursor-pointer"

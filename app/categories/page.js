@@ -4,144 +4,109 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "../components/ProductCard";
 
-const CATEGORY_DATA = {
-  men: [
-    {
-      name: "T-Shirts",
-      sizes: ["S", "M", "L", "XL"],
-      items: Array.from({ length: 10 }, (_, i) => ({
-        id: `5`,
-        title: `Men's Classic Heavyweight Tee Vol. ${i + 1}`,
-        price: 45 + i * 5,
-        category: "Men / T-Shirts",
-        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=800",
-      })),
-    },
-    {
-      name: "Shirts",
-      sizes: ["S", "M", "L", "XL"],
-      items: Array.from({ length: 10 }, (_, i) => ({
-        id: `2`,
-        title: `Tailored Oxford Cotton Shirt ${i + 1}`,
-        price: 85 + i * 10,
-        category: "Men / Shirts",
-        image: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?q=80&w=800",
-      })),
-    },
-    {
-      name: "Jeans",
-      sizes: ["30", "32", "34", "36", "38"],
-      items: Array.from({ length: 8 }, (_, i) => ({
-        id: `8`,
-        title: `Raw Denim Slim Fit Jeans ${i + 1}`,
-        price: 110 + i * 8,
-        category: "Men / Jeans",
-        image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=800",
-      })),
-    },
-    {
-      name: "Shoes",
-      sizes: ["37", "38", "39", "40", "41", "42"],
-      items: Array.from({ length: 10 }, (_, i) => ({
-        id: `m-shs-${i + 1}`,
-        title: `Handcrafted Leather Loafers ${i + 1}`,
-        price: 180 + i * 15,
-        category: "Men / Shoes",
-        image: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?q=80&w=800",
-      })),
-    },
-    {
-      name: "Watches",
-      sizes: null,
-      items: Array.from({ length: 8 }, (_, i) => ({
-        id: `7`,
-        title: `Minimalist Chronograph Watch ${i + 1}`,
-        price: 250 + i * 25,
-        category: "Men / Watches",
-        image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800",
-      })),
-    },
-  ],
-  women: [
-    {
-      name: "Shoes",
-      sizes: ["37", "38", "39", "40", "41", "42"],
-      items: Array.from({ length: 10 }, (_, i) => ({
-        id: `w-shs-${i + 1}`,
-        title: `Elegance Leather Pumps ${i + 1}`,
-        price: 160 + i * 12,
-        category: "Women / Shoes",
-        image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=800",
-      })),
-    },
-    {
-      name: "Handbags",
-      sizes: null,
-      items: Array.from({ length: 8 }, (_, i) => ({
-        id: `6`,
-        title: `Structured Tote Leather Bag ${i + 1}`,
-        price: 220 + i * 20,
-        category: "Women / Handbags",
-        image: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=800",
-      })),
-    },
-    {
-      name: "Watches",
-      sizes: null,
-      items: Array.from({ length: 8 }, (_, i) => ({
-        id: `7`,
-        title: `Rose Gold Petite Watch ${i + 1}`,
-        price: 210 + i * 18,
-        category: "Women / Watches",
-        image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=800",
-      })),
-    },
-    {
-      name: "Jewelry",
-      variants: ["Gold", "Silver", "Rose Gold"],
-      items: Array.from({ length: 10 }, (_, i) => ({
-        id: `w-jw-${i + 1}`,
-        title: `Minimalist Pendant & Chain ${i + 1}`,
-        price: 130 + i * 15,
-        category: "Women / Jewelry",
-        image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800",
-      })),
-    },
-    {
-      name: "Dresses",
-      sizes: ["S", "M", "L", "XL"],
-      items: Array.from({ length: 10 }, (_, i) => ({
-        id: `1`,
-        title: `Silk Evening Gown & Midi ${i + 1}`,
-        price: 240 + i * 20,
-        category: "Women / Dresses",
-        image: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=800",
-      })),
-    },
-  ],
-};
-
 function CategoriesContent() {
   const searchParams = useSearchParams();
-  const initialGender = searchParams.get("gender") || "men";
-  const initialSub = searchParams.get("sub") || "All";
+  
+  const queryGender = searchParams.get("gender");
+  const querySub = searchParams.get("sub") || searchParams.get("category") || searchParams.get("cat") || searchParams.get("subCategory");
 
-  const [activeGender, setActiveGender] = useState(initialGender);
-  const [activeSubCategory, setActiveSubCategory] = useState(initialSub);
+  const [activeGender, setActiveGender] = useState(queryGender ? queryGender.toLowerCase() : "men");
+  const [activeSubCategory, setActiveSubCategory] = useState("All");
+  
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch live products from backend
+  useEffect(() => {
+    const fetchLiveProducts = async () => {
+      try {
+        setLoading(true);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        const res = await fetch(`${API_URL}/products`);
+        if (!res.ok) throw new Error("Failed to fetch products");
+        
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : data.products || [];
+        setProducts(list);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLiveProducts();
+  }, []);
+
+  // Sync URL params with state
   useEffect(() => {
     const g = searchParams.get("gender");
-    const s = searchParams.get("sub");
-    if (g) setActiveGender(g);
+    const s = searchParams.get("sub") || searchParams.get("category") || searchParams.get("cat") || searchParams.get("subCategory");
+
+    if (g) setActiveGender(g.toLowerCase());
     if (s) setActiveSubCategory(s);
+    else setActiveSubCategory("All");
   }, [searchParams]);
 
-  const currentCategories = CATEGORY_DATA[activeGender] || CATEGORY_DATA["men"];
+  // Filter products based on active gender and subcategory
+  const filteredProducts = products.filter((item) => {
+    const cat = String(item.category || "").toLowerCase();
+    const sub = String(item.subCategory || "").toLowerCase();
+    const title = String(item.title || "").toLowerCase();
 
-  const displayedCategories =
-    activeSubCategory === "All"
-      ? currentCategories
-      : currentCategories.filter((c) => c.name.toLowerCase() === activeSubCategory.toLowerCase());
+    // Gender check
+    const isWomen = cat.includes("women") || sub.includes("women") || title.includes("women") || cat.includes("dresses") || cat.includes("handbag") || cat.includes("jewelry");
+    const matchesGender = activeGender === "women" ? isWomen : !isWomen;
+
+    if (!matchesGender) return false;
+
+    // Subcategory check
+    if (activeSubCategory === "All") return true;
+
+    const targetSub = activeSubCategory.toLowerCase();
+    
+    // Strict T-Shirts vs Shirts separation
+    if (targetSub === "t-shirts" || targetSub === "tshirts") {
+      return cat.includes("t-shirt") || sub.includes("t-shirt") || title.includes("t-shirt") || cat.includes("tshirt");
+    }
+    if (targetSub === "shirts") {
+      const isTee = cat.includes("t-shirt") || sub.includes("t-shirt") || title.includes("t-shirt") || cat.includes("tshirt");
+      if (isTee) return false;
+      return cat.includes("shirt") || sub.includes("shirt") || title.includes("shirt");
+    }
+
+    return cat.includes(targetSub) || sub.includes(targetSub) || title.includes(targetSub);
+  });
+
+  // Group items by subcategory for clean rendering
+  const subCategoriesList = activeGender === "women" 
+    ? ["Shoes", "Handbags", "Watches", "Jewelry", "Dresses"] 
+    : ["T-Shirts", "Shirts", "Jeans", "Shoes", "Watches"];
+
+  const displayedCategories = activeSubCategory === "All"
+    ? subCategoriesList.map((subName) => ({
+        name: subName,
+        items: filteredProducts.filter((p) => {
+          const c = String(p.category || "").toLowerCase();
+          const s = String(p.subCategory || "").toLowerCase();
+          const t = String(p.title || "").toLowerCase();
+          const target = subName.toLowerCase();
+
+          if (target === "t-shirts") {
+            return c.includes("t-shirt") || s.includes("t-shirt") || t.includes("t-shirt") || c.includes("tshirt");
+          }
+          if (target === "shirts") {
+            const isTee = c.includes("t-shirt") || s.includes("t-shirt") || t.includes("t-shirt") || c.includes("tshirt");
+            if (isTee) return false;
+            return c.includes("shirt") || s.includes("shirt") || t.includes("shirt");
+          }
+          return c.includes(target) || s.includes(target) || t.includes(target);
+        })
+      })).filter(group => group.items.length > 0)
+    : [{
+        name: activeSubCategory,
+        items: filteredProducts
+      }];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -196,68 +161,71 @@ function CategoriesContent() {
         >
           All Items
         </button>
-        {currentCategories.map((sub) => (
+        {subCategoriesList.map((subName) => (
           <button
-            key={sub.name}
-            onClick={() => setActiveSubCategory(sub.name)}
+            key={subName}
+            onClick={() => setActiveSubCategory(subName)}
             className={`px-4 py-2 text-xs font-medium uppercase tracking-wider transition-all ${
-              activeSubCategory.toLowerCase() === sub.name.toLowerCase()
+              activeSubCategory.toLowerCase() === subName.toLowerCase()
                 ? "border-b-2 border-neutral-900 text-neutral-900 font-bold"
                 : "text-neutral-400 hover:text-neutral-900"
             }`}
           >
-            {sub.name} ({sub.items.length})
+            {subName}
           </button>
         ))}
       </div>
 
-      <div className="space-y-20">
-        {displayedCategories.length > 0 ? (
-          displayedCategories.map((catGroup) => (
-            <section key={catGroup.name} className="space-y-6">
-              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-neutral-200 pb-4 gap-2">
-                <div>
-                  <h2 className="font-serif text-2xl font-bold text-neutral-900">
-                    {catGroup.name}
-                  </h2>
-                  <p className="text-xs text-neutral-500 mt-0.5">
-                    Showing {catGroup.items.length} crafted pieces
-                  </p>
-                </div>
-
-                {catGroup.sizes && (
-                  <div className="flex items-center gap-2 text-xs text-neutral-500">
-                    <span className="font-semibold text-neutral-900">Available Sizes:</span>
-                    <div className="flex gap-1.5 font-mono text-[11px]">
-                      {catGroup.sizes.map((s) => (
-                        <span key={s} className="px-1.5 py-0.5 bg-neutral-100 border border-neutral-200">
-                          {s}
-                        </span>
-                      ))}
+      {loading ? (
+        <div className="text-center py-20">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-neutral-900 border-t-transparent"></div>
+          <p className="mt-3 text-xs uppercase font-semibold text-neutral-500 tracking-widest">
+            Loading Live Products...
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-20">
+          {displayedCategories.length > 0 && displayedCategories.some(g => g.items.length > 0) ? (
+            displayedCategories.map((catGroup) => (
+              catGroup.items.length > 0 && (
+                <section key={catGroup.name} className="space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-neutral-200 pb-4 gap-2">
+                    <div>
+                      <h2 className="font-serif text-2xl font-bold text-neutral-900">
+                        {catGroup.name}
+                      </h2>
                     </div>
                   </div>
-                )}
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {catGroup.items.map((item) => (
-                  <ProductCard key={item.id + Math.random()} {...item} />
-                ))}
-              </div>
-            </section>
-          ))
-        ) : (
-          <div className="text-center py-16 bg-white border border-neutral-200">
-            <p className="font-serif text-xl text-neutral-800">No items found for "{activeSubCategory}"</p>
-            <button
-              onClick={() => setActiveSubCategory("All")}
-              className="mt-4 px-6 py-2.5 bg-neutral-900 text-white text-xs uppercase font-bold"
-            >
-              Show All Categories
-            </button>
-          </div>
-        )}
-      </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {catGroup.items.map((item) => (
+                      <ProductCard
+                        key={item._id || item.id}
+                        product={item}
+                        id={item._id || item.id}
+                        title={item.title || item.name}
+                        price={item.price}
+                        image={item.image || (item.images && item.images[0])}
+                        category={item.category}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )
+            ))
+          ) : (
+            <div className="text-center py-16 bg-white border border-neutral-200">
+              <p className="font-serif text-xl text-neutral-800">No items found for "{activeSubCategory}"</p>
+              <button
+                onClick={() => setActiveSubCategory("All")}
+                className="mt-4 px-6 py-2.5 bg-neutral-900 text-white text-xs uppercase font-bold"
+              >
+                Show All Categories
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
