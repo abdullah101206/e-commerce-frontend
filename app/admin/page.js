@@ -1,72 +1,48 @@
 "use client";
 
-import { useState } from "react";
-
-const INITIAL_ORDERS = [
-  {
-    id: "ORD-9021",
-    customerName: "Sophia Reynolds",
-    phone: "+1 (555) 234-5678",
-    address: "742 Evergreen Terrace, Springfield, OR 97477",
-    product: "Structured Tailored Blazer",
-    quantity: 1,
-    totalAmount: 280,
-    date: "2026-08-10",
-    status: "Pending",
-  },
-  {
-    id: "ORD-9022",
-    customerName: "Marcus Vance",
-    phone: "+1 (555) 876-5432",
-    address: "104 West 57th St, Apt 12B, New York, NY 10019",
-    product: "Minimalist Linen Overshirt",
-    quantity: 2,
-    totalAmount: 280,
-    date: "2026-08-09",
-    status: "Delivered",
-  },
-  {
-    id: "ORD-9023",
-    customerName: "Elena Rostova",
-    phone: "+1 (555) 345-6789",
-    address: "450 Sutter Street, Suite 800, San Francisco, CA 94108",
-    product: "Gold Rimmed Aviator Frame",
-    quantity: 1,
-    totalAmount: 195,
-    date: "2026-08-08",
-    status: "Cancelled",
-  },
-  {
-    id: "ORD-9024",
-    customerName: "Arthur Pendelton",
-    phone: "+1 (555) 901-2345",
-    address: "1200 Beacon St, Boston, MA 02446",
-    product: "Monochrome Trench Coat",
-    quantity: 1,
-    totalAmount: 350,
-    date: "2026-08-11",
-    status: "Pending",
-  },
-];
+import { useState, useEffect } from "react";
 
 export default function AdminDashboardPage() {
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
+  const [orders, setOrders] = useState([]);
   const [activeFilter, setActiveFilter] = useState("All Orders");
+
+  useEffect(() => {
+    const fetchOrders = () => {
+      try {
+        const savedOrders = JSON.parse(localStorage.getItem("adminOrders") || "[]");
+        setOrders(savedOrders);
+      } catch (e) {
+        setOrders([]);
+      }
+    };
+
+    fetchOrders();
+
+    window.addEventListener("storage", fetchOrders);
+    window.addEventListener("orderPlaced", fetchOrders);
+
+    return () => {
+      window.removeEventListener("storage", fetchOrders);
+      window.removeEventListener("orderPlaced", fetchOrders);
+    };
+  }, []);
 
   const totalRevenue = orders
     .filter((o) => o.status !== "Cancelled")
-    .reduce((acc, curr) => acc + curr.totalAmount, 0);
+    .reduce((acc, curr) => acc + (curr.totalAmount || 0), 0);
 
   const totalSales = orders
     .filter((o) => o.status !== "Cancelled")
-    .reduce((acc, curr) => acc + curr.quantity, 0);
+    .reduce((acc, curr) => acc + (curr.quantity || 0), 0);
 
   const totalOrders = orders.length;
 
   const handleStatusChange = (orderId, newStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+    const updatedOrders = orders.map((o) =>
+      o.id === orderId ? { ...o, status: newStatus } : o
     );
+    setOrders(updatedOrders);
+    localStorage.setItem("adminOrders", JSON.stringify(updatedOrders));
   };
 
   const filteredOrders =
@@ -76,7 +52,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      {/* Header Banner */}
       <div className="border-b border-neutral-200 pb-6 mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-xs uppercase tracking-widest text-amber-800 font-semibold">
@@ -86,8 +61,9 @@ export default function AdminDashboardPage() {
             Admin Dashboard
           </h1>
         </div>
-        <div className="text-xs text-neutral-500 font-mono">
-          System Time: Aug 2026 | Live Store Status
+        <div className="text-xs text-emerald-700 font-mono font-bold flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          Live Store Connected
         </div>
       </div>
 
@@ -130,7 +106,7 @@ export default function AdminDashboardPage() {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 activeFilter === filter
                   ? "bg-neutral-900 text-white"
                   : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
@@ -199,8 +175,8 @@ export default function AdminDashboardPage() {
               ))
             ) : (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-neutral-500 font-serif text-base">
-                  No orders found matching status "{activeFilter}".
+                <td colSpan={8} className="p-12 text-center text-neutral-500 font-serif text-base">
+                  No orders found matching status "{activeFilter}". When a customer places an order from checkout, it will appear here automatically.
                 </td>
               </tr>
             )}

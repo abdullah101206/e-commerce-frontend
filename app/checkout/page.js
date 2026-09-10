@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function CheckoutPage() {
   const router = useRouter();
   const [cartItems, setCartItems] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [toast, setToast] = useState({ show: false, message: "" });
 
@@ -14,9 +15,10 @@ export default function CheckoutPage() {
     name: "",
     email: "",
     phone: "",
-    addressLine1: "",
-    cityZip: "",
-    paymentMethod: "card",
+    street: "",
+    city: "",
+    postalCode: "",
+    paymentMethod: "Card",
     cardNumber: "",
     cardName: "",
     expiryDate: "",
@@ -24,12 +26,17 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCartItems(savedCart);
+    const localCart =
+      localStorage.getItem("cart") ||
+      localStorage.getItem("cartItems") ||
+      localStorage.getItem("shopping-cart") ||
+      "[]";
+
+    setCartItems(JSON.parse(localCart));
   }, []);
 
   const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + (Number(item.price) || 0) * (Number(item.quantity) || 1),
     0
   );
   const tax = Math.round(subtotal * 0.08);
@@ -40,31 +47,86 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (cartItems.length === 0) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login first to place an order!");
+      router.push("/login");
+      return;
+    }
+
+    if (!cartItems || cartItems.length === 0) {
       alert("Your cart is empty!");
       return;
     }
 
-    setOrderPlaced(true);
+    setIsSubmitting(true);
 
-    setToast({
-      show: true,
-      message: "Thank you! Your order has been placed successfully.",
-    });
+    try {
+      const orderPayload = {
+        orderItems: cartItems.map((item) => ({
+          product: item._id || item.productId || item.id, // Must be valid Mongo ObjectId
+          title: item.title || item.name,
+          name: item.title || item.name,
+          price: Number(item.price),
+          quantity: Number(item.quantity) || 1,
+          size: item.size || "M",
+          image: item.image || "",
+        })),
+        shippingAddress: {
+          fullName: formData.name,
+          phone: formData.phone,
+          street: formData.street,
+          city: formData.city,
+          postalCode: formData.postalCode,
+        },
+        paymentMethod: formData.paymentMethod, // Sends 'Card' or 'COD'
+        itemsPrice: subtotal,
+        taxPrice: tax,
+        shippingPrice: shipping,
+        totalPrice: grandTotal,
+      };
 
-    localStorage.removeItem("cart");
+      const response = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(orderPayload),
+      });
 
-    setTimeout(() => {
-      router.push("/");
-    }, 3000);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to place order");
+      }
+
+      setOrderPlaced(true);
+      setToast({
+        show: true,
+        message: "Thank you! Your order has been placed successfully.",
+      });
+
+      localStorage.removeItem("cart");
+      localStorage.removeItem("cartItems");
+      localStorage.removeItem("shopping-cart");
+
+      setTimeout(() => {
+        router.push("/");
+      }, 3000);
+    } catch (error) {
+      console.error("Order submission error:", error);
+      alert(error.message || "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-     
       {toast.show && (
         <div className="fixed bottom-6 right-6 z-50 px-6 py-4 bg-emerald-900 text-white border border-emerald-700 rounded-md shadow-2xl text-xs font-semibold tracking-wide animate-bounce">
           ✓ {toast.message}
@@ -148,28 +210,45 @@ export default function CheckoutPage() {
                   </label>
                   <input
                     type="text"
-                    name="addressLine1"
+                    name="street"
                     required
-                    value={formData.addressLine1}
+                    value={formData.street}
                     onChange={handleChange}
                     placeholder="124 Fashion Boulevard, Suite 4B"
                     className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-sm focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-900 mb-2">
-                    City, State & ZIP Code *
-                  </label>
-                  <input
-                    type="text"
-                    name="cityZip"
-                    required
-                    value={formData.cityZip}
-                    onChange={handleChange}
-                    placeholder="New York, NY 10001"
-                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-sm focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-900 mb-2">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      name="city"
+                      required
+                      value={formData.city}
+                      onChange={handleChange}
+                      placeholder="New York"
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-sm focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-900 mb-2">
+                      Postal Code / ZIP *
+                    </label>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      required
+                      value={formData.postalCode}
+                      onChange={handleChange}
+                      placeholder="10001"
+                      className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 text-sm focus:bg-white focus:outline-none focus:border-neutral-900 transition-colors"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -181,7 +260,7 @@ export default function CheckoutPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <label
                     className={`flex items-center gap-3 p-4 border cursor-pointer transition-all ${
-                      formData.paymentMethod === "card"
+                      formData.paymentMethod === "Card"
                         ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
                         : "border-neutral-200 bg-neutral-50 text-neutral-800 hover:bg-neutral-100"
                     }`}
@@ -189,8 +268,8 @@ export default function CheckoutPage() {
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="card"
-                      checked={formData.paymentMethod === "card"}
+                      value="Card"
+                      checked={formData.paymentMethod === "Card"}
                       onChange={handleChange}
                       className="accent-amber-500"
                     />
@@ -200,7 +279,7 @@ export default function CheckoutPage() {
                       </p>
                       <p
                         className={`text-[10px] ${
-                          formData.paymentMethod === "card"
+                          formData.paymentMethod === "Card"
                             ? "text-neutral-300"
                             : "text-neutral-500"
                         }`}
@@ -212,7 +291,7 @@ export default function CheckoutPage() {
 
                   <label
                     className={`flex items-center gap-3 p-4 border cursor-pointer transition-all ${
-                      formData.paymentMethod === "cod"
+                      formData.paymentMethod === "COD"
                         ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
                         : "border-neutral-200 bg-neutral-50 text-neutral-800 hover:bg-neutral-100"
                     }`}
@@ -220,8 +299,8 @@ export default function CheckoutPage() {
                     <input
                       type="radio"
                       name="paymentMethod"
-                      value="cod"
-                      checked={formData.paymentMethod === "cod"}
+                      value="COD"
+                      checked={formData.paymentMethod === "COD"}
                       onChange={handleChange}
                       className="accent-amber-500"
                     />
@@ -231,7 +310,7 @@ export default function CheckoutPage() {
                       </p>
                       <p
                         className={`text-[10px] ${
-                          formData.paymentMethod === "cod"
+                          formData.paymentMethod === "COD"
                             ? "text-neutral-300"
                             : "text-neutral-500"
                         }`}
@@ -242,8 +321,8 @@ export default function CheckoutPage() {
                   </label>
                 </div>
 
-                {formData.paymentMethod === "card" && (
-                  <div className="p-5 bg-neutral-50 border border-neutral-200 space-y-4 animate-fade-in mt-4">
+                {formData.paymentMethod === "Card" && (
+                  <div className="p-5 bg-neutral-50 border border-neutral-200 space-y-4 mt-4">
                     <div>
                       <label className="block text-[10px] font-bold uppercase tracking-widest text-neutral-700 mb-1">
                         Cardholder Name *
@@ -251,7 +330,7 @@ export default function CheckoutPage() {
                       <input
                         type="text"
                         name="cardName"
-                        required={formData.paymentMethod === "card"}
+                        required={formData.paymentMethod === "Card"}
                         value={formData.cardName}
                         onChange={handleChange}
                         placeholder="ALEXANDER WRIGHT"
@@ -267,12 +346,10 @@ export default function CheckoutPage() {
                         type="text"
                         name="cardNumber"
                         maxLength={19}
-                        required={formData.paymentMethod === "card"}
+                        required={formData.paymentMethod === "Card"}
                         value={formData.cardNumber}
                         onChange={(e) => {
-                          let value = e.target.value
-                            .replace(/\D/g, "")
-                            .slice(0, 16);
+                          let value = e.target.value.replace(/\D/g, "").slice(0, 16);
                           value = value.replace(/(.{4})/g, "$1 ").trim();
                           handleChange({
                             target: { name: "cardNumber", value },
@@ -291,12 +368,10 @@ export default function CheckoutPage() {
                           type="text"
                           name="expiryDate"
                           maxLength={5}
-                          required={formData.paymentMethod === "card"}
+                          required={formData.paymentMethod === "Card"}
                           value={formData.expiryDate}
                           onChange={(e) => {
-                            let value = e.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 4);
+                            let value = e.target.value.replace(/\D/g, "").slice(0, 4);
                             if (value.length > 2) {
                               value = value.slice(0, 2) + "/" + value.slice(2);
                             }
@@ -317,7 +392,7 @@ export default function CheckoutPage() {
                           type="password"
                           name="cvc"
                           maxLength={3}
-                          required={formData.paymentMethod === "card"}
+                          required={formData.paymentMethod === "Card"}
                           value={formData.cvc}
                           onChange={handleChange}
                           placeholder="•••"
@@ -338,10 +413,10 @@ export default function CheckoutPage() {
                 </Link>
                 <button
                   type="submit"
-                  disabled={cartItems.length === 0}
+                  disabled={isSubmitting}
                   className="px-10 py-4 bg-neutral-950 text-white text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 transition-all shadow-md active:scale-95 disabled:bg-neutral-400 cursor-pointer"
                 >
-                  Place Order (${grandTotal})
+                  {isSubmitting ? "Processing..." : `Place Order ($${grandTotal})`}
                 </button>
               </div>
             </form>
@@ -354,19 +429,19 @@ export default function CheckoutPage() {
 
             {cartItems.length > 0 ? (
               <div className="space-y-4 max-h-64 overflow-y-auto pr-2">
-                {cartItems.map((item) => (
+                {cartItems.map((item, idx) => (
                   <div
-                    key={item.id}
+                    key={item.id || idx}
                     className="flex justify-between items-center text-xs border-b border-neutral-800/60 pb-3"
                   >
                     <div>
-                      <p className="font-bold text-neutral-100">{item.title}</p>
+                      <p className="font-bold text-neutral-100">{item.title || item.name}</p>
                       <p className="text-[10px] text-neutral-400 font-mono mt-0.5">
                         Size: {item.size || "M"} | Qty: {item.quantity}
                       </p>
                     </div>
                     <span className="font-mono font-semibold">
-                      ${item.price * item.quantity}
+                      ${(Number(item.price) || 0) * (Number(item.quantity) || 1)}
                     </span>
                   </div>
                 ))}

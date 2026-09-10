@@ -202,7 +202,6 @@ export default function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
 
-            {/* Dynamic Badge - Shows only when cartCount > 0 */}
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1.5 bg-amber-500 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount}
