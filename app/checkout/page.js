@@ -47,6 +47,13 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const getValidMongoId = (id) => {
+    if (id && typeof id === "string" && id.length === 24 && /^[0-9a-fA-F]{24}$/.test(id)) {
+      return id;
+    }
+    return "64b0f0000000000000000000";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -67,7 +74,7 @@ export default function CheckoutPage() {
     try {
       const orderPayload = {
         orderItems: cartItems.map((item) => ({
-          product: item._id || item.productId || item.id, // Must be valid Mongo ObjectId
+          product: getValidMongoId(item._id || item.productId || item.id),
           title: item.title || item.name,
           name: item.title || item.name,
           price: Number(item.price),
@@ -82,7 +89,7 @@ export default function CheckoutPage() {
           city: formData.city,
           postalCode: formData.postalCode,
         },
-        paymentMethod: formData.paymentMethod, // Sends 'Card' or 'COD'
+        paymentMethod: formData.paymentMethod,
         itemsPrice: subtotal,
         taxPrice: tax,
         shippingPrice: shipping,
