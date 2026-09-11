@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export default function ProductCard({ id, title, price, category, image }) {
+export default function ProductCard({ _id, id, title, price, category, image, product }) {
   const [toast, setToast] = useState({ show: false, message: "", isError: false });
+
+  const productId = _id || id || product?._id || product?.id;
 
   const showNotification = (message, isError = false) => {
     setToast({ show: true, message, isError });
@@ -25,16 +27,15 @@ export default function ProductCard({ id, title, price, category, image }) {
 
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
     
-    // Check by unique id OR by product title so different items never overlap
     const existingItemIndex = existingCart.findIndex(
-      (item) => (id && item.id === id) || item.title === title
+      (item) => (productId && item.id === productId) || item.title === title
     );
 
     if (existingItemIndex > -1) {
       existingCart[existingItemIndex].quantity += 1;
     } else {
       existingCart.push({
-        id: id || title, // Fallback to title if id is missing
+        id: productId || title,
         title,
         price,
         category,
@@ -46,10 +47,7 @@ export default function ProductCard({ id, title, price, category, image }) {
     }
 
     localStorage.setItem("cart", JSON.stringify(existingCart));
-    
-    // Dispatch event so Navbar badge updates instantly
     window.dispatchEvent(new Event("cartUpdated"));
-
     showNotification("Item added to cart successfully!", false);
   };
 
@@ -76,7 +74,6 @@ export default function ProductCard({ id, title, price, category, image }) {
         />
         <div className="absolute inset-0 bg-black/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Mobile: Always visible | Desktop: Visible only on hover */}
         <div className="absolute bottom-4 left-4 right-4 translate-y-0 opacity-100 sm:translate-y-4 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-300 space-y-2">
           <button
             onClick={handleAddToCart}
@@ -86,7 +83,7 @@ export default function ProductCard({ id, title, price, category, image }) {
           </button>
 
           <Link
-            href={`/shop/${id || ""}`}
+            href={`/shop/${productId}`}
             className="w-full block text-center bg-white text-neutral-900 text-xs uppercase font-semibold tracking-wider py-2 shadow-md hover:bg-neutral-200 transition-colors"
           >
             View Details
@@ -100,7 +97,7 @@ export default function ProductCard({ id, title, price, category, image }) {
             {category}
           </p>
           <h3 className="text-sm font-medium text-neutral-900 group-hover:text-amber-800 transition-colors">
-            <Link href={`/shop/${id || ""}`}>{title}</Link>
+            <Link href={`/shop/${productId}`}>{title}</Link>
           </h3>
         </div>
         <p className="text-sm font-semibold text-neutral-900">${price}</p>

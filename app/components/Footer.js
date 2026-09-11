@@ -17,13 +17,23 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-widest text-white mb-4">Shop</h4>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/categories" className="hover:text-white transition-colors">Men's Apparel</Link></li>
-              <li><Link href="/categories" className="hover:text-white transition-colors">Women's Collection</Link></li>
-              <li><Link href="/categories" className="hover:text-white transition-colors">Accessories & Bags</Link></li>
-              <li><Link href="/shop" className="hover:text-white transition-colors">New Arrivals</Link></li>
+              <li>
+                <Link href="/categories?category=men" className="hover:text-white transition-colors">
+                  Men's Apparel
+                </Link>
+              </li>
+              <li>
+                <Link href="/categories?category=accessories" className="hover:text-white transition-colors">
+                  Accessories & Bags
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="hover:text-white transition-colors">
+                  New Arrivals
+                </Link>
+              </li>
             </ul>
           </div>
-
           <div>
             <h4 className="text-xs font-bold uppercase tracking-widest text-white mb-4">Support</h4>
             <ul className="space-y-2.5 text-sm">
