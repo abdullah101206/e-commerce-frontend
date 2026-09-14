@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
     setError("");
 
     try {
-      await axios.put(`http://localhost:5000/api/auth/reset-password/${token}`, {
+      await axios.put(``${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/auth/reset-password/${token}`, {
         password,
       });
       setCompleted(true);

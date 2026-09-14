@@ -20,7 +20,7 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +115,7 @@ export default function AdminDashboardPage() {
     try {
       const token = localStorage.getItem("token");
 
-      let response = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+      let response = await fetch(``${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders/${orderId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +130,7 @@ export default function AdminDashboardPage() {
       });
 
       if (!response.ok) {
-        response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+        response = await fetch(``${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders/${orderId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

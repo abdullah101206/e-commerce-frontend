@@ -24,7 +24,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const res = await axios.post("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/auth/login", formData);
       const userData = res.data;
 
       if (userData.token) {

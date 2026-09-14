@@ -18,7 +18,7 @@ export default function ShopPage() {
     const fetchNewArrivals = async () => {
       try {
         setLoading(true);
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api";
         
         const res = await fetch(`${API_URL}/products`);
         const data = await res.json();

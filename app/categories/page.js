@@ -20,7 +20,7 @@ function CategoriesContent() {
     const fetchLiveProducts = async () => {
       try {
         setLoading(true);
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api";
         const res = await fetch(`${API_URL}/products`);
         if (!res.ok) throw new Error("Failed to fetch products");
         
