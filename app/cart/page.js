@@ -6,7 +6,6 @@ import Link from "next/link";
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
 
-  // Sync cart from LocalStorage on mount
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(savedCart);

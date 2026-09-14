@@ -107,7 +107,6 @@ export default function ProductDetailPage({ params }) {
     );
   }
 
-  // Sizes array fixed so S, M, L, XL always show up
   const sizesList =
     product.sizes && product.sizes.length > 0
       ? product.sizes
@@ -122,7 +121,6 @@ export default function ProductDetailPage({ params }) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-      {/* Toast Notification */}
       {toast.show && (
         <div
           className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-2xl text-xs font-semibold tracking-wide border flex items-center gap-2 ${toast.isError
@@ -136,7 +134,6 @@ export default function ProductDetailPage({ params }) {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-        {/* Product Image */}
         <div className="aspect-[3/4] w-full bg-neutral-100 overflow-hidden border border-neutral-200 sticky top-28">
           <img
             src={productImage}
@@ -145,7 +142,6 @@ export default function ProductDetailPage({ params }) {
           />
         </div>
 
-        {/* Product Info & Actions */}
         <div className="space-y-8">
           <div className="border-b border-neutral-200 pb-6 space-y-2">
             <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-700">
@@ -159,7 +155,6 @@ export default function ProductDetailPage({ params }) {
             </p>
           </div>
 
-          {/* Overview */}
           <div className="space-y-2">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Overview
@@ -169,7 +164,6 @@ export default function ProductDetailPage({ params }) {
             </p>
           </div>
 
-          {/* Color Selection */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Color Finish: <span className="font-normal text-neutral-500">{selectedColor}</span>
@@ -190,7 +184,6 @@ export default function ProductDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Size Selection */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Select Size
@@ -211,7 +204,6 @@ export default function ProductDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Quantity Selector */}
           <div className="space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Quantity
@@ -233,7 +225,6 @@ export default function ProductDetailPage({ params }) {
             </div>
           </div>
 
-          {/* Add to Cart Action */}
           <button
             onClick={handleAddToCart}
             className="w-full py-4 bg-neutral-900 text-white text-xs uppercase font-bold tracking-[0.2em] shadow-lg hover:bg-amber-800 active:bg-neutral-950 transition-colors cursor-pointer"
@@ -241,7 +232,6 @@ export default function ProductDetailPage({ params }) {
             Add To Cart
           </button>
 
-          {/* Product Highlights */}
           <div className="pt-6 border-t border-neutral-200 space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Product Highlights

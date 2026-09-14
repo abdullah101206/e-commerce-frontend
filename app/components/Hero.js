@@ -1,26 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 
 const HERO_SLIDES = [
   {
     id: 1,
-    tag: "Autumn / Winter 2026 Collection",
+    tag: "Autumn / Winter Collection",
     title: "Elegance Defined by Simplicity.",
     desc: "Discover hand-tailored garments crafted from organic textiles. Designed for timeless comfort and modern sophistication.",
     image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2000",
-    ctaText: "Explore Shop",
-    ctaLink: "/shop",
   },
   {
     id: 2,
-    tag: "Minimalist Outerwear '26",
+    tag: "Minimalist Outerwear",
     title: "Architectural Cut & Pure Drapery.",
     desc: "Precision tailoring engineered from heavy-weight Italian wool and French linen blends.",
     image: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=2000",
-    ctaText: "Discover Outerwear",
-    ctaLink: "/categories?gender=women",
   },
   {
     id: 3,
@@ -28,8 +23,6 @@ const HERO_SLIDES = [
     title: "Unpretentious Quiet Luxury.",
     desc: "Limited-edition articles created in small batches to preserve exclusivity and reduce waste.",
     image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000",
-    ctaText: "View Categories",
-    ctaLink: "/categories",
   },
 ];
 
@@ -53,7 +46,6 @@ export default function Hero() {
 
   return (
     <section className="relative h-[85vh] min-h-[580px] w-full flex items-center justify-center overflow-hidden bg-neutral-950">
-    
       {HERO_SLIDES.map((slide, index) => (
         <div
           key={slide.id}
@@ -71,7 +63,7 @@ export default function Hero() {
       ))}
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center text-white space-y-6">
-        <span className="text-xs uppercase tracking-[0.35em] font-semibold text-amber-300 inline-block animate-fade-in">
+        <span className="text-xs uppercase tracking-[0.35em] font-semibold text-amber-300 inline-block">
           {HERO_SLIDES[currentSlide].tag}
         </span>
         <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] transition-all">
@@ -80,27 +72,12 @@ export default function Hero() {
         <p className="text-sm sm:text-base text-neutral-300 max-w-xl mx-auto font-light leading-relaxed">
           {HERO_SLIDES[currentSlide].desc}
         </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-          <Link
-            href={HERO_SLIDES[currentSlide].ctaLink}
-            className="w-full sm:w-auto px-8 py-4 bg-white text-neutral-950 font-bold text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all shadow-lg"
-          >
-            {HERO_SLIDES[currentSlide].ctaText}
-          </Link>
-          <Link
-            href="/categories"
-            className="w-full sm:w-auto px-8 py-4 border border-white/40 text-white font-semibold text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
-          >
-            Explore Categories
-          </Link>
-        </div>
       </div>
 
       <button
         onClick={prevSlide}
         aria-label="Previous Slide"
-        className="absolute left-4 sm:left-8 z-20 p-3 text-white/70 hover:text-white bg-black/30 hover:bg-black/60 rounded-full backdrop-blur-sm transition-all focus:outline-none"
+        className="absolute left-4 sm:left-8 z-20 p-3 text-white/70 hover:text-white bg-black/30 hover:bg-black/60 rounded-full backdrop-blur-sm transition-all focus:outline-none cursor-pointer"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
@@ -110,7 +87,7 @@ export default function Hero() {
       <button
         onClick={nextSlide}
         aria-label="Next Slide"
-        className="absolute right-4 sm:right-8 z-20 p-3 text-white/70 hover:text-white bg-black/30 hover:bg-black/60 rounded-full backdrop-blur-sm transition-all focus:outline-none"
+        className="absolute right-4 sm:right-8 z-20 p-3 text-white/70 hover:text-white bg-black/30 hover:bg-black/60 rounded-full backdrop-blur-sm transition-all focus:outline-none cursor-pointer"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -122,7 +99,7 @@ export default function Hero() {
           <button
             key={idx}
             onClick={() => setCurrentSlide(idx)}
-            className={`h-1.5 transition-all duration-300 rounded-full ${
+            className={`h-1.5 transition-all duration-300 rounded-full cursor-pointer ${
               idx === currentSlide ? "w-8 bg-amber-400" : "w-2 bg-white/40 hover:bg-white/70"
             }`}
             aria-label={`Go to slide ${idx + 1}`}

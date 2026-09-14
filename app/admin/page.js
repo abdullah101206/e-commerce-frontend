@@ -37,7 +37,6 @@ export default function AdminDashboardPage() {
       const rawOrders = Array.isArray(data) ? data : data.orders || [];
 
       const formattedOrders = rawOrders.map((o) => {
-        // Backend key `orderStatus` mapping fix
         let currentStatus = o.orderStatus || o.status;
         if (!currentStatus) {
           if (o.isDelivered) {
@@ -116,7 +115,6 @@ export default function AdminDashboardPage() {
     try {
       const token = localStorage.getItem("token");
 
-      // Hits backend update endpoint passing orderStatus
       let response = await fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
         method: "PUT",
         headers: {

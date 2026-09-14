@@ -31,11 +31,10 @@ export default function LoginPage() {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("userInfo", JSON.stringify(userData));
 
-        // Single Login Redirection Logic
         if (userData.role === "admin") {
-          router.push("/admin"); // Direct Admin Panel
+          router.push("/admin"); 
         } else {
-          router.push("/");      // Direct Store Front
+          router.push("/");     
         }
       }
     } catch (err) {

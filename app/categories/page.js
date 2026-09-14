@@ -16,7 +16,6 @@ function CategoriesContent() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch live products from backend
   useEffect(() => {
     const fetchLiveProducts = async () => {
       try {
@@ -38,7 +37,6 @@ function CategoriesContent() {
     fetchLiveProducts();
   }, []);
 
-  // Sync URL params with state
   useEffect(() => {
     const g = searchParams.get("gender");
     const s = searchParams.get("sub") || searchParams.get("category") || searchParams.get("cat") || searchParams.get("subCategory");
@@ -48,24 +46,20 @@ function CategoriesContent() {
     else setActiveSubCategory("All");
   }, [searchParams]);
 
-  // Filter products based on active gender and subcategory
   const filteredProducts = products.filter((item) => {
     const cat = String(item.category || "").toLowerCase();
     const sub = String(item.subCategory || "").toLowerCase();
     const title = String(item.title || "").toLowerCase();
 
-    // Gender check
     const isWomen = cat.includes("women") || sub.includes("women") || title.includes("women") || cat.includes("dresses") || cat.includes("handbag") || cat.includes("jewelry");
     const matchesGender = activeGender === "women" ? isWomen : !isWomen;
 
     if (!matchesGender) return false;
 
-    // Subcategory check
     if (activeSubCategory === "All") return true;
 
     const targetSub = activeSubCategory.toLowerCase();
     
-    // Strict T-Shirts vs Shirts separation
     if (targetSub === "t-shirts" || targetSub === "tshirts") {
       return cat.includes("t-shirt") || sub.includes("t-shirt") || title.includes("t-shirt") || cat.includes("tshirt");
     }
@@ -78,7 +72,6 @@ function CategoriesContent() {
     return cat.includes(targetSub) || sub.includes(targetSub) || title.includes(targetSub);
   });
 
-  // Group items by subcategory for clean rendering
   const subCategoriesList = activeGender === "women" 
     ? ["Shoes", "Handbags", "Watches", "Jewelry", "Dresses"] 
     : ["T-Shirts", "Shirts", "Jeans", "Shoes", "Watches"];
