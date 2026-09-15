@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 
 export default function ResetPasswordPage() {
-  const { token } = useParams(); 
+  const { token } = useParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [completed, setCompleted] = useState(false);
@@ -24,7 +24,7 @@ export default function ResetPasswordPage() {
     setError("");
 
     try {
-      await axios.put(``${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/auth/reset-password/${token}`, {
+      await axios.put(`https://e-commerce-backend-xi.vercel.app/api/auth/reset-password/${token}`, {
         password,
       });
       setCompleted(true);

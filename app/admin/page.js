@@ -65,10 +65,10 @@ export default function AdminDashboardPage() {
           paymentMethod: o.paymentMethod || "Card",
           date: o.createdAt
             ? new Date(o.createdAt).toLocaleDateString("en-US", {
-                month: "numeric",
-                day: "numeric",
-                year: "numeric",
-              })
+              month: "numeric",
+              day: "numeric",
+              year: "numeric",
+            })
             : new Date().toLocaleDateString(),
           status: currentStatus,
         };
@@ -115,7 +115,7 @@ export default function AdminDashboardPage() {
     try {
       const token = localStorage.getItem("token");
 
-      let response = await fetch(``${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders/${orderId}/status`, {
+      let response = await fetch(`https://e-commerce-backend-xi.vercel.app/api/orders/${orderId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +130,7 @@ export default function AdminDashboardPage() {
       });
 
       if (!response.ok) {
-        response = await fetch(``${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders/${orderId}`, {
+        response = await fetch(`https://e-commerce-backend-xi.vercel.app/api/orders/${orderId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -244,11 +244,10 @@ export default function AdminDashboardPage() {
             <button
               key={filter}
               onClick={() => setActiveFilter(filter)}
-              className={`px-3 sm:px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                activeFilter === filter
-                  ? "bg-neutral-900 text-white shadow-sm"
-                  : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-100"
-              }`}
+              className={`px-3 sm:px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${activeFilter === filter
+                ? "bg-neutral-900 text-white shadow-sm"
+                : "bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-100"
+                }`}
             >
               {filter}
             </button>
@@ -371,13 +370,12 @@ export default function AdminDashboardPage() {
 
                       <td className="py-4 px-4 text-center align-top whitespace-nowrap">
                         <span
-                          className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                            order.status === "Delivered"
-                              ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
-                              : order.status === "Pending"
+                          className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${order.status === "Delivered"
+                            ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                            : order.status === "Pending"
                               ? "bg-amber-100 text-amber-900 border border-amber-300"
                               : "bg-rose-100 text-rose-900 border border-rose-300"
-                          }`}
+                            }`}
                         >
                           {order.status}
                         </span>
