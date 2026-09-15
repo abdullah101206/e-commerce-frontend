@@ -26,13 +26,14 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const res = await axios.post("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/auth/register", formData);
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://e-commerce-backend-xi.vercel.app';
+      const res = await axios.post(`${API_BASE}/api/auth/register`, formData);
       
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userInfo", JSON.stringify(res.data));
       }
-      
+
       router.push("/");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed. Try again.");
