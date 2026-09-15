@@ -120,21 +120,23 @@ export default function ProductDetailPage({ params }) {
   const productImage = product.image || product.images?.[0] || "/placeholder.jpg";
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-16 overflow-x-hidden">
       {toast.show && (
         <div
-          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-2xl text-xs font-semibold tracking-wide border flex items-center gap-2 ${toast.isError
-            ? "bg-red-950 text-red-200 border-red-800"
-            : "bg-neutral-900 text-white border-neutral-700"
-            }`}
+          className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-2xl text-xs font-semibold tracking-wide border flex items-center gap-2 ${
+            toast.isError
+              ? "bg-red-950 text-red-200 border-red-800"
+              : "bg-neutral-900 text-white border-neutral-700"
+          }`}
         >
           <span className={`w-2 h-2 rounded-full ${toast.isError ? "bg-red-500" : "bg-amber-400"}`} />
           {toast.message}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-        <div className="aspect-[3/4] w-full bg-neutral-100 overflow-hidden border border-neutral-200 sticky top-28">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start w-full">
+        {/* Fixed Mobile & Desktop Image Container */}
+        <div className="w-full h-80 sm:h-96 lg:h-auto lg:aspect-[3/4] bg-neutral-100 border border-neutral-200 overflow-hidden lg:sticky lg:top-28">
           <img
             src={productImage}
             alt={product.title || product.name}
@@ -142,15 +144,16 @@ export default function ProductDetailPage({ params }) {
           />
         </div>
 
-        <div className="space-y-8">
+        {/* Product Details Section */}
+        <div className="w-full space-y-6 sm:space-y-8">
           <div className="border-b border-neutral-200 pb-6 space-y-2">
-            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-700">
+            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-amber-700 block">
               {product.category || "Luxury Collection"}
             </span>
-            <h1 className="font-serif text-3xl sm:text-4xl font-bold text-neutral-900">
+            <h1 className="font-serif text-2xl sm:text-4xl font-bold text-neutral-900 break-words">
               {product.title || product.name}
             </h1>
-            <p className="font-mono text-2xl font-bold text-neutral-900 pt-2">
+            <p className="font-mono text-xl sm:text-2xl font-bold text-neutral-900 pt-2">
               ${product.price}
             </p>
           </div>
@@ -159,7 +162,7 @@ export default function ProductDetailPage({ params }) {
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Overview
             </h3>
-            <p className="text-sm text-neutral-600 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
               {product.description}
             </p>
           </div>
@@ -168,15 +171,16 @@ export default function ProductDetailPage({ params }) {
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Color Finish: <span className="font-normal text-neutral-500">{selectedColor}</span>
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 w-full">
               {colorsList.map((color) => (
                 <button
                   key={color}
                   onClick={() => setSelectedColor(color)}
-                  className={`px-4 py-2 text-xs font-medium border transition-colors ${selectedColor === color
-                    ? "border-neutral-900 bg-neutral-900 text-white font-bold"
-                    : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
-                    }`}
+                  className={`px-3 sm:px-4 py-2 text-xs font-medium border transition-colors ${
+                    selectedColor === color
+                      ? "border-neutral-900 bg-neutral-900 text-white font-bold"
+                      : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
+                  }`}
                 >
                   {color}
                 </button>
@@ -188,15 +192,16 @@ export default function ProductDetailPage({ params }) {
             <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-900">
               Select Size
             </h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 w-full">
               {sizesList.map((size) => (
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
-                  className={`w-12 h-12 flex items-center justify-center text-xs font-mono font-bold border transition-colors ${selectedSize === size
-                    ? "border-neutral-900 bg-neutral-900 text-white"
-                    : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
-                    }`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-xs font-mono font-bold border transition-colors ${
+                    selectedSize === size
+                      ? "border-neutral-900 bg-neutral-900 text-white"
+                      : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
+                  }`}
                 >
                   {size}
                 </button>
@@ -242,7 +247,7 @@ export default function ProductDetailPage({ params }) {
               <li>Includes signature AURA luxury presentation box</li>
             </ul>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 text-[11px] text-neutral-500 font-medium">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-4 text-[11px] text-neutral-500 font-medium">
               <div className="p-3 bg-neutral-50 border border-neutral-100 text-center">
                 Free Express Shipping
               </div>
