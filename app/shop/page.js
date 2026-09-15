@@ -67,7 +67,7 @@ export default function ShopPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16 space-y-8 sm:space-y-12">
-
+      {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2 sm:space-y-3 border-b border-neutral-200 pb-6 sm:pb-10">
         <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.35em] text-amber-700">
           Exclusive Collection
@@ -80,6 +80,7 @@ export default function ShopPage() {
         </p>
       </div>
 
+      {/* Mobile Search & Filter Trigger Bar */}
       <div className="lg:hidden space-y-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex-1">
@@ -88,7 +89,7 @@ export default function ShopPage() {
 
           <button
             onClick={() => setIsMobileFilterOpen(true)}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-neutral-900 text-white text-xs font-bold uppercase tracking-widest active:bg-neutral-800 transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-neutral-900 text-white text-xs font-bold uppercase tracking-widest active:bg-neutral-800 transition-colors shadow-sm cursor-pointer"
           >
             <span>Filters</span>
             {activeFilterCount > 0 && (
@@ -100,7 +101,98 @@ export default function ShopPage() {
         </div>
       </div>
 
+      {/* Mobile Filter Slide-Over Drawer */}
+      {isMobileFilterOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsMobileFilterOpen(false)}
+          />
+
+          {/* Drawer Sidebar */}
+          <div className="relative ml-auto w-full max-w-xs bg-white h-full shadow-2xl flex flex-col z-10 p-6 space-y-6 overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
+              <h3 className="font-serif text-lg font-bold text-neutral-900">Filters</h3>
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="text-neutral-500 hover:text-neutral-900 text-lg font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-900">
+                Search
+              </label>
+              <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-900">
+                Category
+              </label>
+              <div className="flex flex-col gap-1.5 max-h-52 overflow-y-auto pr-1">
+                {categoriesList.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                    }}
+                    className={`text-left text-xs py-2 px-3 transition-colors ${
+                      selectedCategory === cat
+                        ? "bg-neutral-900 text-white font-bold"
+                        : "text-neutral-600 hover:bg-neutral-100"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <label className="block text-[11px] font-bold uppercase tracking-widest text-neutral-900">
+                  Max Price
+                </label>
+                <span className="font-mono text-xs font-bold text-neutral-900">${maxPrice}</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="1000"
+                step="10"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="w-full accent-neutral-900 cursor-pointer"
+              />
+            </div>
+
+            <div className="pt-4 border-t border-neutral-200 space-y-2 mt-auto">
+              {activeFilterCount > 0 && (
+                <button
+                  onClick={resetAllFilters}
+                  className="w-full py-2.5 text-xs font-bold uppercase tracking-widest text-amber-800 border border-amber-800 hover:bg-amber-50 transition-colors"
+                >
+                  Reset All Filters
+                </button>
+              )}
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-full py-3 bg-neutral-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-neutral-800 transition-colors"
+              >
+                Apply & View Products
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        {/* Desktop Sidebar Filters */}
         <div className="hidden lg:block lg:col-span-3 bg-white p-6 border border-neutral-200 shadow-sm space-y-8 sticky top-28">
           <div className="flex justify-between items-center border-b border-neutral-200 pb-4">
             <h3 className="font-serif text-lg font-bold text-neutral-900">Filters</h3>
@@ -130,10 +222,11 @@ export default function ShopPage() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`text-left text-xs py-2 px-3 transition-colors ${selectedCategory === cat
+                  className={`text-left text-xs py-2 px-3 transition-colors ${
+                    selectedCategory === cat
                       ? "bg-neutral-900 text-white font-bold"
                       : "text-neutral-600 hover:bg-neutral-100"
-                    }`}
+                  }`}
                 >
                   {cat}
                 </button>
@@ -160,6 +253,7 @@ export default function ShopPage() {
           </div>
         </div>
 
+        {/* Product Listing */}
         <div className="lg:col-span-9 space-y-6">
           <div className="bg-white p-4 border border-neutral-200 flex flex-row justify-between items-center gap-4 text-xs">
             <span className="text-neutral-500 font-light text-[11px] sm:text-xs">
