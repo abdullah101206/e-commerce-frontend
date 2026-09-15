@@ -18,14 +18,13 @@ export default function ShopPage() {
     const fetchNewArrivals = async () => {
       try {
         setLoading(true);
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api";
-        
-        const res = await fetch(`${API_URL}/products`);
+
+        const res = await fetch("https://e-commerce-backend-xi.vercel.app/api/products");
         const data = await res.json();
         const fetchedList = Array.isArray(data) ? data : data.products || [];
 
         const filteredNew = fetchedList.filter((item) => item.isNewArrival === true);
-        
+
         setProducts(filteredNew.length > 0 ? filteredNew : fetchedList);
       } catch (error) {
         console.error("New Arrivals Fetching Error:", error);
@@ -131,11 +130,10 @@ export default function ShopPage() {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`text-left text-xs py-2 px-3 transition-colors ${
-                    selectedCategory === cat
+                  className={`text-left text-xs py-2 px-3 transition-colors ${selectedCategory === cat
                       ? "bg-neutral-900 text-white font-bold"
                       : "text-neutral-600 hover:bg-neutral-100"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>

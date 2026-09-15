@@ -27,8 +27,8 @@ export default function ProductDetailPage({ params }) {
     const fetchProductDetails = async () => {
       try {
         setLoading(true);
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api";
-        const res = await fetch(`${API_URL}/products/${productId}`);
+
+        const res = await fetch(`https://e-commerce-backend-xi.vercel.app/api/products/${productId}`);
 
         if (!res.ok) {
           throw new Error("Product not found");
@@ -124,8 +124,8 @@ export default function ProductDetailPage({ params }) {
       {toast.show && (
         <div
           className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-lg shadow-2xl text-xs font-semibold tracking-wide border flex items-center gap-2 ${toast.isError
-              ? "bg-red-950 text-red-200 border-red-800"
-              : "bg-neutral-900 text-white border-neutral-700"
+            ? "bg-red-950 text-red-200 border-red-800"
+            : "bg-neutral-900 text-white border-neutral-700"
             }`}
         >
           <span className={`w-2 h-2 rounded-full ${toast.isError ? "bg-red-500" : "bg-amber-400"}`} />
@@ -174,8 +174,8 @@ export default function ProductDetailPage({ params }) {
                   key={color}
                   onClick={() => setSelectedColor(color)}
                   className={`px-4 py-2 text-xs font-medium border transition-colors ${selectedColor === color
-                      ? "border-neutral-900 bg-neutral-900 text-white font-bold"
-                      : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
+                    ? "border-neutral-900 bg-neutral-900 text-white font-bold"
+                    : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
                     }`}
                 >
                   {color}
@@ -194,8 +194,8 @@ export default function ProductDetailPage({ params }) {
                   key={size}
                   onClick={() => setSelectedSize(size)}
                   className={`w-12 h-12 flex items-center justify-center text-xs font-mono font-bold border transition-colors ${selectedSize === size
-                      ? "border-neutral-900 bg-neutral-900 text-white"
-                      : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
+                    ? "border-neutral-900 bg-neutral-900 text-white"
+                    : "border-neutral-200 text-neutral-700 hover:border-neutral-400"
                     }`}
                 >
                   {size}
