@@ -17,12 +17,11 @@ function CategoriesContent() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLiveProducts = async () => {
-      try {
-        setLoading(true);
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api";
-        const res = await fetch(`${API_URL}/products`);
-        if (!res.ok) throw new Error("Failed to fetch products");
+   const fetchLiveProducts = async () => {
+  try {
+    setLoading(true);
+    const res = await fetch("https://e-commerce-backend-xi.vercel.app/api/products");
+    if (!res.ok) throw new Error("Failed to fetch products");
         
         const data = await res.json();
         const list = Array.isArray(data) ? data : data.products || [];

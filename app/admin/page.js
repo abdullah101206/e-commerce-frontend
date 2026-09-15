@@ -20,7 +20,7 @@ export default function AdminDashboardPage() {
         return;
       }
 
-      const response = await fetch("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders", {
+      const response = await fetch("https://e-commerce-backend-xi.vercel.app/api/orders", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

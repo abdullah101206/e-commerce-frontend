@@ -24,17 +24,16 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await axios.post("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/auth/login", formData);
-      const userData = res.data;
+      const res = await axios.post("https://e-commerce-backend-xi.vercel.app/api/auth/login", formData); const userData = res.data;
 
       if (userData.token) {
         localStorage.setItem("token", userData.token);
         localStorage.setItem("userInfo", JSON.stringify(userData));
 
         if (userData.role === "admin") {
-          router.push("/admin"); 
+          router.push("/admin");
         } else {
-          router.push("/");     
+          router.push("/");
         }
       }
     } catch (err) {

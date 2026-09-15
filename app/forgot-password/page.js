@@ -16,8 +16,7 @@ export default function ForgotPasswordPage() {
     setError("");
 
     try {
-      await axios.post("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/auth/forgot-password", { email });
-      setSubmitted(true);
+      await axios.post("https://e-commerce-backend-xi.vercel.app/api/auth/forgot-password", { email }); setSubmitted(true);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to send email");
     } finally {

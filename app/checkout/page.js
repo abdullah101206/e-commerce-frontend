@@ -96,7 +96,7 @@ export default function CheckoutPage() {
         totalPrice: grandTotal,
       };
 
-      const response = await fetch("`${process.env.NEXT_PUBLIC_API_BASE_URL}`/api/orders", {
+      const response = await fetch("https://e-commerce-backend-xi.vercel.app/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -266,11 +266,10 @@ export default function CheckoutPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <label
-                    className={`flex items-center gap-3 p-4 border cursor-pointer transition-all ${
-                      formData.paymentMethod === "Card"
+                    className={`flex items-center gap-3 p-4 border cursor-pointer transition-all ${formData.paymentMethod === "Card"
                         ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
                         : "border-neutral-200 bg-neutral-50 text-neutral-800 hover:bg-neutral-100"
-                    }`}
+                      }`}
                   >
                     <input
                       type="radio"
@@ -285,11 +284,10 @@ export default function CheckoutPage() {
                         Credit / Debit Card
                       </p>
                       <p
-                        className={`text-[10px] ${
-                          formData.paymentMethod === "Card"
+                        className={`text-[10px] ${formData.paymentMethod === "Card"
                             ? "text-neutral-300"
                             : "text-neutral-500"
-                        }`}
+                          }`}
                       >
                         Visa, Mastercard, Amex
                       </p>
@@ -297,11 +295,10 @@ export default function CheckoutPage() {
                   </label>
 
                   <label
-                    className={`flex items-center gap-3 p-4 border cursor-pointer transition-all ${
-                      formData.paymentMethod === "COD"
+                    className={`flex items-center gap-3 p-4 border cursor-pointer transition-all ${formData.paymentMethod === "COD"
                         ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
                         : "border-neutral-200 bg-neutral-50 text-neutral-800 hover:bg-neutral-100"
-                    }`}
+                      }`}
                   >
                     <input
                       type="radio"
@@ -316,11 +313,10 @@ export default function CheckoutPage() {
                         Cash on Delivery (COD)
                       </p>
                       <p
-                        className={`text-[10px] ${
-                          formData.paymentMethod === "COD"
+                        className={`text-[10px] ${formData.paymentMethod === "COD"
                             ? "text-neutral-300"
                             : "text-neutral-500"
-                        }`}
+                          }`}
                       >
                         Pay upon doorstep delivery
                       </p>
