@@ -8,6 +8,19 @@ export default function ProductCard({ _id, id, title, price, category, image, pr
 
   const productId = _id || id || product?._id || product?.id;
 
+  const getOptimizedImageUrl = (url) => {
+    if (!url) return "/placeholder.jpg";
+    if (url.includes("images.unsplash.com")) {
+      const cleanUrl = url.split("?")[0];
+      return `${cleanUrl}?auto=format&fit=crop&w=600&q=75`;
+    }
+    if (url.includes("images.pexels.com")) {
+      const cleanUrl = url.split("?")[0];
+      return `${cleanUrl}?auto=compress&cs=tinysrgb&w=600`;
+    }
+    return url;
+  };
+
   const showNotification = (message, isError = false) => {
     setToast({ show: true, message, isError });
     setTimeout(() => {
@@ -68,8 +81,10 @@ export default function ProductCard({ _id, id, title, price, category, image, pr
 
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-neutral-100 rounded-none mb-4">
         <img
-          src={image}
+          src={getOptimizedImageUrl(image)}
           alt={title}
+          loading="lazy"
+          decoding="async"
           className="h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300" />
