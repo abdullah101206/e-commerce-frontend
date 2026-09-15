@@ -26,9 +26,8 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://e-commerce-backend-xi.vercel.app';
-      const res = await axios.post(`${API_BASE}/api/auth/register`, formData);
-      
+      const res = await axios.post("https://e-commerce-backend-xi.vercel.app/api/auth/register", formData);
+
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("userInfo", JSON.stringify(res.data));
